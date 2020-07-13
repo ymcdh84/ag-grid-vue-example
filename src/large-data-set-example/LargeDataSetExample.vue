@@ -1,10 +1,11 @@
 <template>
     <div style="width: 100%;">
-        <h1>Large Data Set Component (100,000 rows)</h1>
+        <h1>Large Data Set Component ({{rownum | localeNum}} rows)</h1>
         <ag-grid-vue style="width: 100%; height: 650px;" class="ag-theme-alpine"
                      :rowData="rowData"
                      :columnDefs="columnDefs"
                      :modules="modules"
+					 rowSelection="multiple"
                      @grid-ready="onReady">
         </ag-grid-vue>
     </div>
@@ -24,7 +25,8 @@
             return {
                 rowData: this.rowData,
                 columnDefs: this.columnDefs,
-                modules: AllCommunityModules
+                modules: AllCommunityModules,
+				rownum : ""
             }
         },
         components: {
@@ -34,9 +36,15 @@
             // data created here so outside of vue (ie no reactive, not observed)
             // also frozen (prob unnecessarily)
             this.rowData = [];
-            for (let i = 0; i < 100000; i++) {
-                this.rowData.push(Object.freeze({
-                    recordNumber: i,
+			
+			let rn = 0;
+            
+			for (let i = 0; i < 100000; i++) {
+				
+				rn ++;
+                
+				this.rowData.push(Object.freeze({
+                    recordNumber: rn,
                     value1: Math.floor(Math.random() * 10000),
                     value2: Math.floor(Math.random() * 10000),
                     value3: Math.floor(Math.random() * 10000),
@@ -46,24 +54,36 @@
                     value7: Math.floor(Math.random() * 10000)
                 }));
             }
+			
+			this.rownum = rn;
+			
             this.rowData = Object.freeze(this.rowData);
 
             this.columnDefs = Object.freeze([
-                {headerName: 'Record', field: 'recordNumber'},
+				{
+                   headerName: '#', minWidth: 60, width: 60, checkboxSelection: true, sortable: false,
+                   suppressMenu: true, pinned: true
+                },
+				{headerName: 'Record', field: 'recordNumber'},
                 {headerName: 'Value 1', field: 'value1'},
                 {headerName: 'Value 2', field: 'value2'},
                 {headerName: 'Value 3', field: 'value3'},
                 {headerName: 'Value 4', field: 'value4'},
-                {headerName: 'Value 5', field: 'value4'},
-                {headerName: 'Value 6', field: 'value4'},
-                {headerName: 'Value 7', field: 'value4'}
+                {headerName: 'Value 5', field: 'value5'},
+                {headerName: 'Value 6', field: 'value6'},
+                {headerName: 'Value 7', field: 'value7'}
             ])
         },
         methods: {
-            onReady(params) {
-                //params.api.sizeColumnsToFit();
+            onReady(params) {				
+                console.log(params.api.sizeColumnsToFit());
             }
-        }
+        },
+		filters : {
+			localeNum : function(val){
+				return val.toLocaleString()
+			}
+		}
     }
 </script>
 

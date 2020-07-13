@@ -14,6 +14,7 @@ module.exports = {
         },
         performance: {
             hints: false
-        }
+        },
+		entry: ["babel-polyfill", "./src/main.js"]
     }
 };
